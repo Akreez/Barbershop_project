@@ -1,0 +1,28 @@
+<p>reservation-list works!</p>
+
+<table class="table table-striped table-info">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>StartTime</th>
+            <th>EndTime</th>
+            <th>Price</th>
+            <th>BarberId</th>
+            <th>CustomerId</th>
+            <th>Active</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for(res of reservations; track res.id){
+            <tr>
+                <td>{{res.id}}</td>
+                <td>{{res.start_time}}</td>
+                <td>{{res.end_time}}</td>
+                <td>{{res.price}}</td>
+                <td>{{res.barber_id}}</td>
+                <td>{{res.customer_id}}</td>
+                <td>{{res.active}}</td>
+            </tr>
+        }
+    </tbody>
+</table>
