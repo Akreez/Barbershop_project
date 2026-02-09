@@ -1,0 +1,62 @@
+<p>manage-services works!</p>
+
+<table class="table table-striped table-info">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Service</th>
+            <th>Required Time</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for(service of services; track service.id){
+            <tr>
+                <td>{{service.id}}</td>
+                <td>{{service.service}}</td>
+                <td>{{service.required_time}}</td>
+                <td>{{service.price}}</td>
+                <td>
+                    <button class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#editModal" (click)="editService(service)" >Módosít</button>
+                    <button class="btn btn-danger mx-2">Törlés</button> 
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editModalLabel">Módosít</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+        <form [formGroup]="serviceForm" (ngSubmit)="updateService()" id="serviceForm">
+
+          <div class="mb-3">
+            <label for="service" class="form-label">Szolgáltatás</label>
+            <input type="text" class="form-control" id="service" formControlName="service">
+          </div>
+          <div class="mb-3">
+            <label for="required_time" class="form-label">Idő</label>
+            <input type="text" class="form-control" id="required_time" formControlName="required_time">
+          </div>
+          <div class="mb-3">
+            <label for="price" class="form-label">Ár</label>
+            <input type="text" class="form-control" id="price" formControlName="price">
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+        <button type="submit" class="btn btn-primary" form="serviceForm" data-bs-dismiss="modal">Mentés</button>
+      </div>
+    </div>
+  </div>
+</div>

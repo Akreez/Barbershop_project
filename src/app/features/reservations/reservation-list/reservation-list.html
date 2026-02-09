@@ -10,6 +10,7 @@
             <th>BarberId</th>
             <th>CustomerId</th>
             <th>Active</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -22,7 +23,57 @@
                 <td>{{res.barber_id}}</td>
                 <td>{{res.customer_id}}</td>
                 <td>{{res.active}}</td>
+                <td>
+                    <button class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#editModal" (click)="editReservation(res)">Módosiít</button>
+                    <button class="btn btn-danger mx-2" (click)="res.active = !res.active">Lemond</button> 
+                </td>
             </tr>
         }
     </tbody>
 </table>
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editModalLabel">Módosít</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+        <form [formGroup]="reservationForm" (ngSubmit)="updateReservation()" id="editReservationForm">
+            <div class="mb-2">
+                <label for="StartTime" class="form-label">StartTime</label>
+                <input type="text" id="StartTime" formControlName="start_time" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label for="EndTime" class="form-label">EndTime</label>
+                <input type="text" id="EndTime" formControlName="end_time" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label for="Price" class="form-label">Price</label>
+                <input type="text" id="Price" formControlName="price" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label for="BarberId" class="form-label">BarberId</label>
+                <input type="text" id="BarberId" formControlName="barber_id" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label for="CustomerId" class="form-label">CustomerId</label>
+                <input type="text" id="CustomerId" formControlName="customer_id" class="form-control">
+            </div>
+            <div class="mb-2">
+                <label for="Active" class="form-label">Active</label>
+                <input type="text" id="Active" formControlName="active" class="form-control">
+            </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+        <button type="submit" class="btn btn-primary" form="editReservationForm" data-bs-dismiss="modal">Mentés</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -43,5 +43,32 @@ export class ReservationList {
     })
   }
 
+  updateReservation(){
+    this.resApi.updateReservation$(this.reservationForm.value).subscribe({
+      next: (res: any)=>{
+        console.log(res);
+        this.reservationForm.reset();
+        this.readReservations();
+      },
+      error: (err: any)=>{
+        console.log(err);
+      }
+    })
+  }
+  editReservation(res: any){
+    this.reservationForm.patchValue(res);
+  }
+
+  deleteReservation(id: number){
+    this.resApi.deleteReservation$(id).subscribe({
+      next: (result: any)=>{
+        console.log(result);
+        this.readReservations();
+      },
+      error: (err: any)=>{
+        console.log(err);
+      }
+    })
+  }
 
 }

@@ -1,0 +1,11 @@
+::ng-deep .bg-disabled {
+    background-color: #e9ecef !important;
+    pointer-events: none; /* Ne lehessen rákattintani */
+    cursor: not-allowed;
+}
+
+::ng-deep .bg-reserved {
+    background-color: #f8d7da !important;
+    pointer-events: none;
+    cursor: not-allowed;
+}

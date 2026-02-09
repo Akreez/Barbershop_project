@@ -22,7 +22,7 @@ export class ReservationApi {
   }
 
   updateReservation$(reservation: any) {
-    const url = this.host;
+    const url = this.host + "/" + reservation.id;
     return this.http.put(url, reservation);
   }
 

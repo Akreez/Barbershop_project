@@ -1,4 +1,47 @@
-<p>book-reservation works!</p>
+<div class="row text-center mb-3">
+  <div class="col-md-4">
+    <div class="btn-group">
+      <div
+        class="btn btn-primary"
+        mwlCalendarPreviousView
+        [view]="view"
+        [(viewDate)]="viewDate"
+      >
+        Előző
+      </div>
+      <div
+        class="btn btn-outline-secondary"
+        mwlCalendarToday
+        [(viewDate)]="viewDate"
+      >
+        Ma
+      </div>
+      <div
+        class="btn btn-primary"
+        mwlCalendarNextView
+        [view]="view"
+        [(viewDate)]="viewDate"
+      >
+        Következő
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+  </div>
+</div>
+
+<div class="container mb-4">
+  <h3>1. Válasszon szolgáltatást:</h3>
+  <div class="d-flex gap-2 flex-wrap">
+    <select id="serviceSelect" class="form-select" (change)="onServiceChange($event)">
+      <option value="" disabled selected>Válasszon szolgáltatást...</option>
+      @for(service of services; track service.id) {
+           <option [value]="service.id">{{service.service}} ({{service.price}} Ft)</option> 
+      }
+    </select>
+  </div>
+</div>
 
 <div [ngSwitch]="view">
   <mwl-calendar-week-view
@@ -9,7 +52,11 @@
     [hourSegmentHeight]="30"
     [dayStartHour]="8" 
     [dayEndHour]="20"
-    (hourSegmentClicked)="hourSegmentClicked($event.date)" data-bs-toggle="modal" data-bs-target="#reservationModal">
+    (beforeViewRender)="beforePeriodViewRender($event)"
+    (hourSegmentClicked)="hourSegmentClicked($event.date)"
+    [attr.data-bs-toggle]="(selectedService && !isSlotReserved(viewDate)) ? 'modal' : null"
+    [attr.data-bs-target]="(selectedService && !isSlotReserved(viewDate)) ? '#reservationModal' : null">
+    
   </mwl-calendar-week-view>
 </div>
 
@@ -19,16 +66,12 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="reservationModalLabel">Időpont foglalás</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
       </div>
       <div class="modal-body">
 
 
         <form [formGroup]="reservationForm" (ngSubmit)="createReservation()" id="reservationForm">
-            <div class="mb-2">
-                <label for="id" class="form-label">Id</label>
-                <input type="text" id="id" formControlName="id" class="form-control" readonly>
-            </div>
             <div class="mb-2">
                 <label for="StartTime" class="form-label">StartTime</label>
                 <input type="text" id="StartTime" formControlName="start_time" class="form-control">
@@ -37,17 +80,19 @@
                 <label for="EndTime" class="form-label">EndTime</label>
                 <input type="text" id="EndTime" formControlName="end_time" class="form-control">
             </div>
+
             <div class="mb-2">
-                <label for="Price" class="form-label">Price</label>
+                <label for="Price" class="form-label">Service</label>
                 <input type="text" id="Price" formControlName="price" class="form-control">
             </div>
+
             <div class="mb-2">
-                <label for="BarberId" class="form-label">BarberId</label>
+                <label for="BarberId" class="form-label">Barber</label>
                 <input type="text" id="BarberId" formControlName="barber_id" class="form-control">
             </div>
             <div class="mb-2">
-                <label for="CustomerId" class="form-label">CustomerId</label>
-                <input type="text" id="CustomerId" formControlName="customer_id" class="form-control" placeholder="Nem kell!">
+                <label for="CustomerId" class="form-label">Customer</label>
+                <input type="text" id="CustomerId" formControlName="customer_id" class="form-control">
             </div>
             <div class="mb-2">
                 <label for="Active" class="form-label">Active</label>
@@ -58,8 +103,8 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezár</button>
-        <button type="submit" class="btn btn-primary" form="reservationForm">Foglalás</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancel()">Bezár</button>
+        <button type="submit" class="btn btn-primary" form="reservationForm" data-bs-dismiss="modal">Foglalás</button>
       </div>
     </div>
   </div>
