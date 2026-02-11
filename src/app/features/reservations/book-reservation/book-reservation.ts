@@ -1,10 +1,11 @@
 import { CommonModule, formatDate, registerLocaleData } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CalendarCommonModule, CalendarEvent, CalendarView, CalendarWeekViewComponent, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { ReservationApi } from '../../../core/services/reservation-api';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ServicesApi } from '../../../core/services/services-api';
+import { SelectionService } from '../../../core/services/selection/selection';
 
 @Component({
   selector: 'app-book-reservation',
@@ -24,13 +25,18 @@ import { ServicesApi } from '../../../core/services/services-api';
   styleUrl: './book-reservation.css',
 })
 export class BookReservation {
+
+  private readonly resApi = inject(ReservationApi);
+  private readonly builder = inject(FormBuilder);
+  private readonly selection = inject(SelectionService);
+  // private readonly x = inject();
+
   view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
   events: CalendarEvent[] = [];
 
   reservationForm!: any;
   reservations!: any;
-  services!: any;
   selectedService: any = null;
 
   beforePeriodViewRender(body: any): void {
@@ -65,14 +71,15 @@ export class BookReservation {
     });
   }
 
-  constructor(
-    private resApi: ReservationApi,
-    private builder: FormBuilder,
-    private serviceApi: ServicesApi
-  ) {}
-
   ngOnInit(){
-    this.readServices();
+    this.selection.selectedService$.subscribe(service => {
+      if (service) {
+        this.selectedService = service;
+        this.reservationForm.patchValue({
+          price: service.price
+        });
+      }
+    })
     this.readReservations();
     this.reservationForm = this.builder.group({
       id: '',
@@ -85,18 +92,6 @@ export class BookReservation {
       
     })
   }
-
-onServiceChange(event: any) {
-  const serviceId = event.target.value;
-  const selected = this.services.find((s: any) => s.id == serviceId);
-  
-  if (selected) {
-    this.selectedService = selected; // Eltároljuk a teljes objektumot
-    this.reservationForm.patchValue({ 
-      price: selected.price 
-    });
-  }
-}
 
   hourSegmentClicked(date: any) {
     if (date < new Date()) {
@@ -158,24 +153,6 @@ onServiceChange(event: any) {
   cancel(){
     this.reservationForm.reset();
     this.selectedService = null;
-  
-  // A HTML-ben lévő select elemet is alaphelyzetbe kell állítani
-  const selectElement = document.getElementById('serviceSelect') as HTMLSelectElement;
-  if (selectElement) {
-    selectElement.value = ""; // Visszaállítja a "Válasszon szolgáltatást..." opcióra
-  }
-  }
-
-  readServices() {
-    this.serviceApi.readServices$().subscribe({
-      next: (result: any) => {
-        // console.log(result.data);
-        this.services = result.data;
-      },
-      error: (err: any) => {
-        console.log(err);
-      }
-    });
   }
 
 }

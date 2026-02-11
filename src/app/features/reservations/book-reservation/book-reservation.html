@@ -31,17 +31,6 @@
   </div>
 </div>
 
-<div class="container mb-4">
-  <h3>1. Válasszon szolgáltatást:</h3>
-  <div class="d-flex gap-2 flex-wrap">
-    <select id="serviceSelect" class="form-select" (change)="onServiceChange($event)">
-      <option value="" disabled selected>Válasszon szolgáltatást...</option>
-      @for(service of services; track service.id) {
-           <option [value]="service.id">{{service.service}} ({{service.price}} Ft)</option> 
-      }
-    </select>
-  </div>
-</div>
 
 <div [ngSwitch]="view">
   <mwl-calendar-week-view
