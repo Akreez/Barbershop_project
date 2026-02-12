@@ -11,7 +11,7 @@ export class UserApi {
   private readonly http = inject(HttpClient);
 
   readBarbers$() {
-    const url = this.host + '/barbers';
+    const url = this.host + '/barber';
     return this.http.get(url);
   }
 }
