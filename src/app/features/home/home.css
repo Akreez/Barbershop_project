@@ -1,0 +1,61 @@
+/* Hero Section alapbeállítás */
+.hero-section {
+  height: 90vh; /* Mobilon majdnem teljes kijelző */
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+              url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074') no-repeat center center;
+  background-size: cover;
+  transition: height 0.3s ease;
+}
+
+/* Betűméretek kezelése Media Query-vel */
+.hero-title {
+  font-size: 2.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+}
+
+/* Tablet és PC nézet (768px felett) */
+@media (min-width: 768px) {
+  .hero-section {
+    height: 80vh;
+  }
+  .hero-title {
+    font-size: 4rem;
+  }
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+}
+
+/* Mobil specifikus gomb méret */
+@media (max-width: 576px) {
+  .btn-gold {
+    width: 100%; /* Mobilon teljes szélességű gomb */
+  }
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Kártya stílusok */
+.service-card {
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+
+.service-card:active { /* Mobilos érintésre reagáljon */
+  transform: scale(0.98);
+}
+
+.text-gold {
+  color: #c5a059 !important;
+}
+
+.btn-gold {
+  background-color: #c5a059;
+  color: white;
+  border: none;
+}

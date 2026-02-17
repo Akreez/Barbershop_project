@@ -1,0 +1,33 @@
+/* Navbar háttér és keret */
+.bg-black {
+  background-color: #000000 !important;
+}
+
+.tracking-widest {
+  letter-spacing: 3px;
+}
+
+/* Navigációs linkek hover effektje */
+.nav-link:hover {
+  color: #ffc107 !important; /* Bootstrap warning sárga */
+  transition: 0.3s;
+}
+
+/* Modal listaelemek egyedi stílusa */
+.list-group-item-action:hover {
+  background-color: #1a1a1a !important;
+  border-color: #ffc107 !important;
+  color: #ffc107 !important;
+}
+
+.active-service {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+  border-color: #ffc107 !important;
+}
+
+/* Gomb stílus finomítás */
+.btn-outline-light {
+    border-radius: 0; /* Szögletesebb, férfiasabb dizájn */
+    border-width: 2px;
+}
