@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ServicesApi } from '../../../core/services/services-api';
 import { Router, RouterModule } from '@angular/router';
 import { SelectionService } from '../../../core/services/selection/selection';
+import { Auth } from '../../../core/services/auth/auth';
 
 @Component({
   selector: 'app-navbar',
@@ -12,7 +13,7 @@ import { SelectionService } from '../../../core/services/selection/selection';
 export class Navbar {
   private readonly serviceApi = inject(ServicesApi);
   private readonly router = inject(Router);
-  private readonly selection = inject(SelectionService);
+  public readonly selection = inject(SelectionService);
 
   services!: any;
   selectedService: any = null;
@@ -39,5 +40,9 @@ export class Navbar {
         console.log(err);
       }
     });
+  }
+
+  setRole(role: 'admin' | 'user' | null){
+    this.selection.setMockUser(role);
   }
 }

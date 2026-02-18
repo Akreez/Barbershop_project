@@ -5,21 +5,27 @@
     </a>
 
     <div class="d-flex align-items-center">
-      <a class="nav-link text-white-50 me-3" routerLink="/szolgaltatasok">Szolgáltatások</a>
-      <a class="nav-link text-white-50 me-3" routerLink="/lista">Lista</a>
+      <!-- <a class="nav-link text-white-50 me-3" routerLink="/szolgaltatasok">Szolgáltatások</a> -->
+       @if (selection.currentUser$) {
+          <a class="nav-link text-white-50 me-3" routerLink="/lista">Lista</a>
+       }
       
-      <button class="btn btn-outline-light btn-sm px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      
+      <button class="btn btn-outline-light btn-sm px-4 fw-bold mx-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+        Bejelentkezés
+      </button>
+      <button class="btn btn-outline-light btn-sm px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#serviceModal">
         IDŐPONT FOGLALÁS
       </button>
     </div>
   </div>
 </nav>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-white border-secondary">
       <div class="modal-header border-secondary">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Válasszon szolgáltatást</h1>
+        <h1 class="modal-title fs-5" id="serviceModalLabel">Válasszon szolgáltatást</h1>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -40,6 +46,31 @@
           </button>
           }
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- serviceModal vége -->
+
+<!-- Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="loginModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="p-3 bg-warning text-dark shadow" style="z-index: 9999; width: fit-content;">
+          <small>Teszt Üzemmód:</small>
+          <button (click)="setRole('user')" class="btn btn-sm btn-dark mx-1">User</button>
+          <button (click)="setRole('admin')" class="btn btn-sm btn-danger mx-1">Admin</button>
+          <button (click)="setRole(null)" class="btn btn-sm btn-secondary mx-1">Logout</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
