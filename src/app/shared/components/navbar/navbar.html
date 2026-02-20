@@ -5,15 +5,22 @@
     </a>
 
     <div class="d-flex align-items-center">
-      <!-- <a class="nav-link text-white-50 me-3" routerLink="/szolgaltatasok">Szolgáltatások</a> -->
-       @if (selection.currentUser$) {
-          <a class="nav-link text-white-50 me-3" routerLink="/lista">Lista</a>
+       @if ((selection.currentUser$ | async)?.role === 'user' || (selection.currentUser$ | async)?.role === 'barber' ) {
+          <a class="nav-link text-white-50 me-3" routerLink="/lista">Foglalások</a>
+       }
+
+       @if ((selection.currentUser$ | async)?.role === 'admin') {
+        <a class="nav-link text-white-50 me-3" routerLink="/admin">Admin panel</a>
        }
       
+      @if (selection.loggedIn == false) {
+        <button class="btn btn-outline-light btn-sm px-4 fw-bold mx-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+          Bejelentkezés
+        </button>
+      }@else {
+        <button (click)="setRole(null)" class="btn btn-outline-light btn-sm px-4 fw-bold mx-2">Kijelentkezés</button>
+      }
       
-      <button class="btn btn-outline-light btn-sm px-4 fw-bold mx-2" data-bs-toggle="modal" data-bs-target="#loginModal">
-        Bejelentkezés
-      </button>
       <button class="btn btn-outline-light btn-sm px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#serviceModal">
         IDŐPONT FOGLALÁS
       </button>
@@ -57,20 +64,17 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="loginModalLabel">Modal title</h1>
+        <h1 class="modal-title fs-5" id="loginModalLabel">Teszt üzemmód</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="p-3 bg-warning text-dark shadow" style="z-index: 9999; width: fit-content;">
           <small>Teszt Üzemmód:</small>
-          <button (click)="setRole('user')" class="btn btn-sm btn-dark mx-1">User</button>
-          <button (click)="setRole('admin')" class="btn btn-sm btn-danger mx-1">Admin</button>
-          <button (click)="setRole(null)" class="btn btn-sm btn-secondary mx-1">Logout</button>
+          <button (click)="setRole('user')" class="btn btn-sm btn-dark mx-1" data-bs-dismiss="modal">User</button>
+          <button (click)="setRole('barber')" class="btn btn-sm btn-success mx-1" data-bs-dismiss="modal">Barber</button>
+          <button (click)="setRole('admin')" class="btn btn-sm btn-danger mx-1" data-bs-dismiss="modal">Admin</button>
+          
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>

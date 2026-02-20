@@ -14,21 +14,40 @@
         </tr>
     </thead>
     <tbody>
-        
         @for(res of reservations; track res.id){
-            <tr>
-                <td>{{res.id}}</td>
-                <td>{{res.start_time}}</td>
-                <td>{{res.end_time}}</td>
-                <td>{{res.price}}</td>
-                <td>{{res.barber_id}}</td>
-                <td>{{res.customer_id}}</td>
-                <td>{{res.active}}</td>
-                <td>
-                    <button class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#editModal" (click)="editReservation(res)">Módosít</button>
-                    <button class="btn btn-danger mx-2" (click)="res.active = !res.active">Lemond</button> 
-                </td>
-            </tr>
+            @if ((selection.currentUser$ | async)?.role === 'user') {
+                @if (res.customer_id == 3) {
+                <tr>
+                    <td>{{res.id}}</td>
+                    <td>{{res.start_time}}</td>
+                    <td>{{res.end_time}}</td>
+                    <td>{{res.price}}</td>
+                    <td>{{res.barber_id}}</td>
+                    <td>{{res.customer_id}}</td>
+                    <td>{{res.active}}</td>
+                    <td>
+                        <button class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#editModal" (click)="editReservation(res)">Módosít</button>
+                        <button class="btn btn-danger mx-2" (click)="res.active = !res.active">Lemond</button> 
+                    </td>
+                </tr>
+                } 
+            }@else if ((selection.currentUser$ | async)?.role === 'barber') {
+                @if (res.barber_id == 1) {
+                    <tr>
+                        <td>{{res.id}}</td>
+                        <td>{{res.start_time}}</td>
+                        <td>{{res.end_time}}</td>
+                        <td>{{res.price}}</td>
+                        <td>{{res.barber_id}}</td>
+                        <td>{{res.customer_id}}</td>
+                        <td>{{res.active}}</td>
+                        <td>
+                            <button class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#editModal" (click)="editReservation(res)">Módosít</button>
+                            <button class="btn btn-danger mx-2" (click)="res.active = !res.active">Lemond</button> 
+                        </td>
+                    </tr>
+                } 
+            }
         }
     </tbody>
 </table>

@@ -2,11 +2,11 @@ import { Component, inject } from '@angular/core';
 import { ServicesApi } from '../../../core/services/services-api';
 import { Router, RouterModule } from '@angular/router';
 import { SelectionService } from '../../../core/services/selection/selection';
-import { Auth } from '../../../core/services/auth/auth';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterModule],
+  imports: [RouterModule, AsyncPipe],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -42,7 +42,7 @@ export class Navbar {
     });
   }
 
-  setRole(role: 'admin' | 'user' | null){
+  setRole(role: 'admin' | 'user' | 'barber' | null){
     this.selection.setMockUser(role);
   }
 }

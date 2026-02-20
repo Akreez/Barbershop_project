@@ -41,7 +41,7 @@ export class BookReservation implements OnInit, OnDestroy {
     end_time: ['', Validators.required],
     price: [''],
     barber_id: [''], 
-    customer_id: ['1'],
+    customer_id: ['3'],
     active: [1]
   });
 
@@ -49,7 +49,7 @@ export class BookReservation implements OnInit, OnDestroy {
     this.serviceSub = this.selection.selectedService$.subscribe(service => {
       if (!service) {
         // Ha nincs kiválasztott szolgáltatás, visszaküldjük a főoldalra
-        this.router.navigate(['/']); // Vagy ahogy a home útvonalad nevezi magát
+        this.router.navigate(['/']);
         return;
       }
       this.selectedService = service;
@@ -123,9 +123,9 @@ export class BookReservation implements OnInit, OnDestroy {
       const reservationsAtTime = this.reservations.filter(res => {
         const start = new Date(res.start_time);
         const end = new Date(res.end_time);
-        return date >= start && date < end;
+        return date >= start && date <= end;
       });
-      return reservationsAtTime.length >= this.barbers.length;
+      return reservationsAtTime.length == this.barbers.length;
     }
   }
 

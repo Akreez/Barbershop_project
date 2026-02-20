@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ReservationApi } from '../../../core/services/reservation-api';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { SelectionService } from '../../../core/services/selection/selection';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-reservation-list',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, AsyncPipe],
   templateUrl: './reservation-list.html',
   styleUrl: './reservation-list.css',
 })
@@ -13,10 +15,9 @@ export class ReservationList {
   reservationForm!: any;
   reservations!: any;
 
-  constructor(
-    private resApi: ReservationApi,
-    private builder: FormBuilder
-  ){}
+  private resApi = inject(ReservationApi);
+  private builder = inject(FormBuilder);
+  public selection = inject(SelectionService)
 
   ngOnInit(){
     this.reservationForm = this.builder.group({
