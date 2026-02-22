@@ -14,4 +14,9 @@ export class UserApi {
     const url = this.host + '/barber';
     return this.http.get(url);
   }
+
+  readUsers$() {
+    const url = this.host + '/user';
+    return this.http.get(url);
+  }
 }

@@ -8,6 +8,7 @@ import { SelectionService } from '../../../core/services/selection/selection';
 import { UserApi } from '../../../core/services/user-api';
 import { Subject, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { Auth } from '../../../core/services/auth/auth';
 
 
 declare var bootstrap: any; // <--- EZT ADD HOZZÁ
@@ -26,6 +27,7 @@ export class BookReservation implements OnInit, OnDestroy {
   private readonly selection = inject(SelectionService);
   private readonly userApi = inject(UserApi);
   private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
 
   view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
@@ -41,7 +43,7 @@ export class BookReservation implements OnInit, OnDestroy {
     end_time: ['', Validators.required],
     price: [''],
     barber_id: [''], 
-    customer_id: ['3'],
+    customer_id: [''],
     active: [1]
   });
 
@@ -177,7 +179,8 @@ export class BookReservation implements OnInit, OnDestroy {
       start_time: formatDate(date, 'yyyy-MM-dd HH:mm', 'en-GB'),
       end_time: formatDate(endDate, 'yyyy-MM-dd HH:mm', 'en-GB'),
       barber_id: barberId,
-      price: this.selectedService.price
+      price: this.selectedService.price,
+      customer_id: this.auth.id(),
     });
 
     const modalElement = document.getElementById('reservationModal');

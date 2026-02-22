@@ -9,16 +9,15 @@
 ::ng-deep .cal-week-view .cal-day-column .cal-hour-segment.bg-disabled,
 ::ng-deep .cal-event.bg-disabled,
 ::ng-deep .bg-disabled {
-    cursor: default !important; /* Itt állítjuk vissza 'not-allowed'-ról */
+    cursor: default !important;
 }
 
 ::ng-deep .cal-event.bg-disabled {
-    color: transparent !important; /* Ha van szöveg az eseményben, tüntessük el */
+    color: transparent !important; 
     box-shadow: none !important;
     opacity: 0.7 !important;
 }
 
-/* 4. ÁLTALÁNOS SZABÁLY */
 ::ng-deep .bg-disabled {
     background-color: #e9ecef !important;
     pointer-events: auto !important; 

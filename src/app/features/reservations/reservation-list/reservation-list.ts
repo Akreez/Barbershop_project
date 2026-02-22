@@ -3,6 +3,7 @@ import { ReservationApi } from '../../../core/services/reservation-api';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { SelectionService } from '../../../core/services/selection/selection';
 import { AsyncPipe } from '@angular/common';
+import { Auth } from '../../../core/services/auth/auth';
 
 @Component({
   selector: 'app-reservation-list',
@@ -17,7 +18,7 @@ export class ReservationList {
 
   private resApi = inject(ReservationApi);
   private builder = inject(FormBuilder);
-  public selection = inject(SelectionService)
+  public auth = inject(Auth);
 
   ngOnInit(){
     this.reservationForm = this.builder.group({
@@ -70,6 +71,18 @@ export class ReservationList {
         console.log(err);
       }
     })
+  }
+
+  setInactive(id: number) {
+    if (confirm('Biztosan lemondod ezt a foglalást?')) {
+      this.resApi.setInactive$(id).subscribe({
+        next: (res: any) => {
+          console.log('Foglalás lemondva', res);
+          this.readReservations(); 
+        },
+        error: (err: any) => console.error(err)
+      });
+    }
   }
 
 }

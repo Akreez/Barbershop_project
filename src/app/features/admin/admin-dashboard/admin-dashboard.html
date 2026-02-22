@@ -1,1 +1,65 @@
-<p>admin-dashboard works!</p>
+<div class="container mt-4">
+  <h2 class="text-white mb-4">Admin Vezérlőpult</h2>
+
+  <div class="row g-4">
+    <div class="col-12">
+      <h3 class="text-warning border-bottom pb-2">Szolgáltatások</h3>
+      <div class="row row-cols-1 row-cols-md-3 g-3">
+        @for(service of services; track service.id) {
+          <div class="col">
+            <div class="card bg-dark text-white border-secondary h-100 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title text-warning">{{service.service}}</h5>
+                <p class="card-text">Ár: {{service.price}} Ft</p>
+                <p class="card-text"><small class="text-secondary">Időtartam: {{service.required_time}}</small></p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="col-12 mt-5">
+      <h3 class="text-info border-bottom pb-2">Aktuális Foglalások</h3>
+      <div class="row row-cols-1 row-cols-md-4 g-3">
+        @for(res of reservations; track res.id) {
+          <div class="col">
+            <div class="card border-info bg-dark text-white h-100">
+              <div class="card-header border-info">ID: #{{res.id}}</div>
+              <div class="card-body">
+                <p class="mb-1"><strong>Dátum:</strong> {{res.appointment_date}}</p>
+                <p class="mb-1"><strong>Ügyfél:</strong> {{res.user_id}}</p>
+                <span class="badge">
+                  {{res.status}}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="col-md-6 mt-5">
+      <h3 class="text-success border-bottom pb-2">Borbélyok</h3>
+      <ul class="list-group">
+        @for(barber of barbers; track barber.id) {
+          <li class="list-group-item bg-dark text-white border-secondary d-flex justify-content-between">
+            {{barber.username}}
+            <span class="badge bg-success">Aktív</span>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="col-md-6 mt-5">
+      <h3 class="text-secondary border-bottom pb-2">Regisztrált Felhasználók</h3>
+      <ul class="list-group shadow">
+        @for(user of users; track user.id) {
+          <li class="list-group-item bg-secondary text-white border-dark">
+            {{user.username}} ({{user.email}})
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

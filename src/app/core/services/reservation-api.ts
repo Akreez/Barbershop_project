@@ -8,6 +8,7 @@ import { environment } from '../../../environments/environment.development';
 export class ReservationApi {
 
   host = environment.resApi;
+  host2 = environment.api;
 
   constructor(private http: HttpClient) {}
 
@@ -29,6 +30,11 @@ export class ReservationApi {
   deleteReservation$(id: number) {
     const url = this.host + '/' + id;
     return this.http.delete(url);
+  }
+
+  setInactive$(id: number) {
+    const url = this.host2 + '/inactiveReservation/' + id;
+    return this.http.put(url, id);
   }
 
 }

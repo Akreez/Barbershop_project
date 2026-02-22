@@ -1,0 +1,51 @@
+<div class="register-container d-flex align-items-center justify-content-center">
+  <div class="card bg-dark text-white border-secondary shadow-lg p-4" style="max-width: 450px; width: 100%;">
+    
+    <div class="text-center mb-4">
+      <i class="bi bi-person-plus fs-1 text-warning"></i>
+      <h2 class="fw-bold text-uppercase tracking-widest mt-2">Regisztráció</h2>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label text-secondary small text-uppercase fw-bold">Felhasználónév</label>
+        <div class="input-group">
+          <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-person"></i></span>
+          <input type="text" formControlName="username" class="form-control bg-black border-secondary text-white">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-secondary small text-uppercase fw-bold">Email cím</label>
+        <div class="input-group">
+          <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-envelope"></i></span>
+          <input type="email" formControlName="email" class="form-control bg-black border-secondary text-white">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-secondary small text-uppercase fw-bold">Jelszó</label>
+        <div class="input-group">
+          <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-lock"></i></span>
+          <input type="password" formControlName="password" class="form-control bg-black border-secondary text-white">
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label text-secondary small text-uppercase fw-bold">Jelszó újra</label>
+        <div class="input-group">
+          <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-shield-lock"></i></span>
+          <input type="password" formControlName="confirmPassword" class="form-control bg-black border-secondary text-white">
+        </div>
+        @if (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched) {
+          <small class="text-danger mt-1">A két jelszó nem egyezik!</small>
+        }
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid" class="btn btn-warning w-100 fw-bold text-uppercase py-2 shadow mb-3">
+        Fiók létrehozása
+      </button>
+
+    </form>
+  </div>
+</div>

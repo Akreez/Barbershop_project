@@ -17,7 +17,7 @@ export class Navbar {
   private readonly router = inject(Router);
   public readonly selection = inject(SelectionService);
   private readonly builder = inject(FormBuilder);
-  private readonly auth = inject(Auth);
+  public readonly auth = inject(Auth);
 
   services!: any;
   selectedService: any = null;
@@ -51,25 +51,30 @@ export class Navbar {
     });
   }
 
-  login(){
-    console.log(this.loginForm.value);
+  login() {
     this.auth.login$(this.loginForm.value).subscribe({
-      next: (res: any)=>{
-        console.log('Szerver válasza:', res);
-        if(res.success){
-          console.log(res.data[0].token);
-          const token = res.data[0].token
-          localStorage.setItem('token', token);
-          this.auth.loginSuccess();
+      next: (res: any) => {
+        if (res.success) {
+          const user = res.data[0];
+          
+          localStorage.setItem('token', user.token);
+
+          this.auth.loginSuccess({
+            id: user.id,
+            role: user.role,
+            email: user.email
+          });
+
           this.router.navigate(['/főoldal']);
-        }else{
+        } else {
           console.log("A hitelesítés sikertelen!");
         }
       }
     });
   }
 
-  setRole(role: 'admin' | 'user' | 'barber' | null){
-    this.selection.setMockUser(role);
+  logout(){
+    this.auth.logout();
+    this.router.navigate(['/főoldal']);
   }
 }

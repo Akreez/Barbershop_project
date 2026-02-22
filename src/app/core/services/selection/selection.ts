@@ -13,9 +13,4 @@ export class SelectionService {
   setService(service: any) {
     this.selectedServiceSource.next(service);
   }
-
-  setMockUser(role: 'admin' | 'user' | 'barber' | null) {
-    this.currentUser.next({ role });
-    this.loggedIn = !this.loggedIn;
-  }
 }
