@@ -68,13 +68,27 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+
         <div class="p-3 bg-warning text-dark shadow" style="z-index: 9999; width: fit-content;">
           <small>Teszt Üzemmód:</small>
           <button (click)="setRole('user')" class="btn btn-sm btn-dark mx-1" data-bs-dismiss="modal">User</button>
           <button (click)="setRole('barber')" class="btn btn-sm btn-success mx-1" data-bs-dismiss="modal">Barber</button>
           <button (click)="setRole('admin')" class="btn btn-sm btn-danger mx-1" data-bs-dismiss="modal">Admin</button>
-          
         </div>
+          <form [formGroup]="loginForm" (ngSubmit)="login()">
+              <div>
+                  <label for="username" class="form-label">Név</label>
+                  <input type="text" formControlName="username" class="form-control">
+              </div>
+              <div>
+                  <label for="password" class="form-label">Jelszó</label>
+                  <input type="text" formControlName="password" class="form-control">
+              </div>
+              <div>
+                  <button type="submit" class="btn btn-primary mt-3">Belépés</button>
+              </div>
+          </form>
+
       </div>
     </div>
   </div>

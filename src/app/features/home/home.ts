@@ -40,8 +40,4 @@ export class Home {
     this.router.navigate(['/foglalas']);
     
   }
-
-  scrollToServices() {
-    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-  }
 }

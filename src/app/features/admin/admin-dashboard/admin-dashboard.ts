@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ServicesApi } from '../../../core/services/services-api';
+import { ReservationApi } from '../../../core/services/reservation-api';
+import { UserApi } from '../../../core/services/user-api';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -7,5 +10,7 @@ import { Component } from '@angular/core';
   styleUrl: './admin-dashboard.css',
 })
 export class AdminDashboard {
-
+  private readonly serviceApi = inject(ServicesApi);
+  private readonly resApi = inject(ReservationApi);
+  private readonly userApi = inject(UserApi);
 }
