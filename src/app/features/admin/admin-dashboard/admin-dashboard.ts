@@ -4,6 +4,7 @@ import { ReservationApi } from '../../../core/services/reservation-api';
 import { UserApi } from '../../../core/services/user-api';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Auth } from '../../../core/services/auth/auth';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -16,6 +17,7 @@ export class AdminDashboard {
   private readonly resApi = inject(ReservationApi);
   private readonly userApi = inject(UserApi);
   private readonly builder = inject(FormBuilder);
+  public readonly auth = inject(Auth);
 
   services: any[] = [];
   serviceForm!: any;
@@ -160,14 +162,14 @@ export class AdminDashboard {
     })
   }
   giveInactive(id: number){
-    this.userApi.giveInactive$(id).subscribe({
-      next: (res: any)=>{
-        console.log(res.data);
-        this.readUsers();
-      },
-      error: (err: any)=>{
-        console.log(err);
-      }
-    })
-  }
+    if (confirm('Biztosan inaktívvá teszed a felhasználót? Nem fog tudni bejelentkezni.')) {
+      this.userApi.giveInactive$(id).subscribe({
+        next: (res: any) => {
+          console.log('Felhasználó inaktiválva');
+          this.readUsers(); // Frissítés
+        },
+        error: (err) => console.error(err)
+      });
+    }
+  } 
 }

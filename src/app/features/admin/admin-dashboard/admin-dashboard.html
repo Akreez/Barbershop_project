@@ -1,53 +1,66 @@
-<div class="container mt-4 pb-5">
-  <h2 class="text-white mb-4 fw-bold text-uppercase tracking-widest border-bottom border-warning pb-2">
-    <i class="bi bi-speedometer2 me-2"></i>Admin Vezérlőpult
+<div class="container mt-4 pb-5 bg-light min-vh-100">
+  <h2 class="text-dark mb-4 fw-bold text-uppercase tracking-widest border-bottom border-primary pb-2">
+    <i class="bi bi-shield-shaded me-2 text-primary"></i>Adminisztráció
   </h2>
 
   <div class="row g-4">
     <div class="col-12">
-      <div class="card bg-dark text-white border-secondary shadow">
-        <div class="card-header border-secondary bg-black d-flex justify-content-between align-items-center">
-          <h5 class="mb-0 text-warning text-uppercase small fw-bold">Felhasználók és Jogosultságok</h5>
-          <span class="badge bg-warning text-dark">{{users.length}} fő</span>
+      <div class="card border-0 shadow-sm bg-white">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-3">
+          <h5 class="mb-0 fw-bold small text-uppercase text-primary"><i class="bi bi-people me-2"></i>Felhasználói bázis</h5>
+          <span class="badge bg-primary text-white">{{users?.length}} Regisztrált</span>
         </div>
-        <div class="card-body p-0">
+        
+        <div class="card-body p-0" style="max-height: 450px; overflow-y: auto;">
           <div class="table-responsive">
-            <table class="table table-dark table-hover mb-0">
-              <thead>
-                <tr class="text-secondary small">
-                  <th class="ps-4">Név / Email</th>
+            <table class="table table-hover mb-0 align-middle">
+              <thead class="table-light sticky-top">
+                <tr class="small text-uppercase text-secondary">
+                  <th class="ps-4">Felhasználó</th>
                   <th>Jogkör</th>
                   <th class="text-end pe-4">Műveletek</th>
                 </tr>
               </thead>
               <tbody>
                 @for(user of users; track user.id) {
-                  <tr>
-                    <td class="ps-4">
-                      <div class="fw-bold">{{user.username}}</div>
-                      <div class="small text-secondary">{{user.email}}</div>
-                    </td>
-                    <td class="align-middle">
-                      <span class="badge rounded-pill" [ngClass]="{
-                        'bg-danger': user.role === 'admin',
-                        'bg-warning text-dark': user.role === 'barber',
-                        'bg-secondary': user.role === 'user'
-                      }">{{user.role}}</span>
-                    </td>
-                    <td class="text-end pe-4 align-middle">
-                      <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-danger" (click)="giveAdmin(user.id)" [disabled]="user.role === 'admin'" title="Admin jog">
-                          <i class="bi bi-shield-lock"></i>
-                        </button>
-                        <button class="btn btn-outline-warning" (click)="giveBarber(user.id)" [disabled]="user.role === 'barber'" title="Borbély jog">
-                          <i class="bi bi-scissors"></i>
-                        </button>
-                        <button class="btn btn-outline-secondary" (click)="revokeRole(user.id)" [disabled]="user.role === 'user'" title="Visszavonás">
-                          <i class="bi bi-person-x"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  @if (user.id != auth.id()) {
+                    <tr>
+                      <td class="ps-4">
+                        <div class="fw-bold text-dark">{{user.username || user.name}}</div>
+                        <div class="small text-muted">{{user.email}}</div>
+                      </td>
+                      <td>
+                        <span class="badge border" [ngClass]="{
+                          'status-admin': user.role === 'admin',
+                          'status-barber': user.role === 'barber',
+                          'status-user': user.role === 'user',
+                          'status-inactive': user.active == 0,
+                          'status-superadmin': user.role === 'superadmin'
+                        }">
+                          {{ user.active == 0 ? 'INACTIVE' : (user.role | uppercase) }}
+                        </span>
+                      </td>
+                      <td class="text-end pe-4">
+                        @if (user.role !== 'superadmin') {
+                          <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                              Művelet
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                              <li><h6 class="dropdown-header">Jogkör váltása</h6></li>
+                              <li><a class="dropdown-item" (click)="giveAdmin(user.id)" [class.disabled]="user.role === 'admin'"><i class="bi bi-shield-check me-2 text-info"></i>Admin</a></li>
+                              <li><a class="dropdown-item" (click)="giveBarber(user.id)" [class.disabled]="user.role === 'barber'"><i class="bi bi-scissors me-2 text-primary"></i>Borbély</a></li>
+                              <li><a class="dropdown-item" (click)="revokeRole(user.id)" [class.disabled]="user.role === 'user'"><i class="bi bi-person-dash me-2"></i>Jogkör visszavonása</a></li>
+                              <li><hr class="dropdown-divider"></li>
+                              <li><a class="dropdown-item text-danger" (click)="giveInactive(user.id)" [class.disabled]="user.active == 0"><i class="bi bi-slash-circle me-2"></i>Inaktívvá tétel</a></li>
+                            </ul>
+                          </div>
+                        } @else {
+                          <i class="bi bi-patch-check-fill text-warning" title="Szuper-admin"></i>
+                        }
+                      </td>
+                    </tr>
+                  }
                 }
               </tbody>
             </table>
@@ -56,25 +69,26 @@
       </div>
     </div>
 
-    <div class="col-md-6">
-      <div class="card bg-dark text-white border-secondary shadow h-100">
-        <div class="card-header border-secondary bg-black d-flex justify-content-between">
-          <h5 class="mb-0 text-warning text-uppercase small fw-bold">Szolgáltatások</h5>
-          <button class="btn btn-outline-warning btn-sm" (click)="createService()">
-            <i class="bi bi-plus-lg"></i> Új
-          </button>
+    <div class="col-md-7">
+      <div class="card border-0 shadow-sm bg-white h-100">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-3">
+          <h5 class="mb-0 text-primary small fw-bold text-uppercase">Szolgáltatások</h5>
+          <button class="btn btn-primary btn-sm rounded-pill" (click)="createService()">+ Új</button>
         </div>
         <div class="card-body">
           <div class="list-group list-group-flush">
             @for(service of services; track service.id) {
-              <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0">
+              <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                 <div>
-                  <div class="fw-bold">{{service.service}}</div>
-                  <small class="text-secondary">{{service.required_time}} perc</small>
+                  <h6 class="mb-0 fw-bold text-dark">{{service.service}}</h6>
+                  <small class="text-muted">{{service.required_time}}</small>
                 </div>
                 <div class="text-end">
-                  <div class="fw-bold text-warning mb-1">{{service.price}} Ft</div>
-                  <button class="btn btn-link text-danger btn-sm p-0" (click)="deleteService(service.id)">Törlés</button>
+                  <span class="d-block fw-bold text-primary">{{service.price}} Ft</span>
+                  <div class="btn-group">
+                    <button class="btn btn-link btn-sm text-info p-0 me-2" (click)="editService(service)" data-bs-toggle="modal" data-bs-target="#editModal">Szerkesztés</button>
+                    <button class="btn btn-link btn-sm text-danger p-0" (click)="deleteService(service.id)">Törlés</button>
+                  </div>
                 </div>
               </div>
             }
@@ -83,23 +97,54 @@
       </div>
     </div>
 
-    <div class="col-md-6">
-      <div class="card bg-dark text-white border-secondary shadow h-100">
-        <div class="card-header border-secondary bg-black">
-          <h5 class="mb-0 text-warning text-uppercase small fw-bold">Aktív Borbélyok</h5>
+    <div class="col-md-5">
+      <div class="card border-0 shadow-sm bg-white h-100">
+        <div class="card-header bg-white border-bottom p-3">
+          <h5 class="mb-0 text-primary small fw-bold text-uppercase">Aktív Borbélyok</h5>
         </div>
         <div class="card-body">
-          <div class="row row-cols-2 g-2">
+          <div class="row g-2">
             @for(barber of barbers; track barber.id) {
-              <div class="col">
-                <div class="p-2 border border-secondary rounded text-center bg-black">
-                  <i class="bi bi-person-badge text-warning fs-4"></i>
-                  <div class="small fw-bold mt-1">{{barber.username}}</div>
+              <div class="col-6">
+                <div class="p-3 border rounded text-center bg-light">
+                  <div class="fw-bold small">{{barber.username}}</div>
+                  <div class="text-muted smaller">{{barber.email}}</div>
                 </div>
               </div>
             }
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h1 class="modal-title fs-5" id="editModalLabel">Szolgáltatás módosítása</h1>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form [formGroup]="serviceForm" (ngSubmit)="updateService()" id="editServiceForm">
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-uppercase">Szolgáltatás neve</label>
+            <input type="text" formControlName="service" class="form-control shadow-sm">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-uppercase">Szolgáltatás ideje (perc)</label>
+            <input type="text" formControlName="required_time" class="form-control shadow-sm">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-uppercase">Szolgáltatás ára (Ft)</label>
+            <input type="number" formControlName="price" class="form-control shadow-sm">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-light border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Mégse</button>
+        <button type="submit" form="editServiceForm" class="btn btn-primary rounded-pill px-4" data-bs-dismiss="modal">Mentés</button>
       </div>
     </div>
   </div>
