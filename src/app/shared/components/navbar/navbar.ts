@@ -8,7 +8,7 @@ import { Auth } from '../../../core/services/auth/auth';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterModule, AsyncPipe, ReactiveFormsModule],
+  imports: [RouterModule,  ReactiveFormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })

@@ -2,10 +2,12 @@ import { Component, inject } from '@angular/core';
 import { ServicesApi } from '../../../core/services/services-api';
 import { ReservationApi } from '../../../core/services/reservation-api';
 import { UserApi } from '../../../core/services/user-api';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
@@ -13,13 +15,34 @@ export class AdminDashboard {
   private readonly serviceApi = inject(ServicesApi);
   private readonly resApi = inject(ReservationApi);
   private readonly userApi = inject(UserApi);
+  private readonly builder = inject(FormBuilder);
 
   services: any[] = [];
+  serviceForm!: any;
   reservations: any[] = [];
   barbers: any[] = [];
   users: any[] = [];
+  reservationForm!: any;
+
 
   ngOnInit() {
+    this.reservationForm = this.builder.group({
+      id: '',
+      start_time: '',
+      price: '',
+      barber_id: '',
+      customer_id: '',
+      active: '',
+      end_time: ''
+    })
+
+    this.serviceForm = this.builder.group({
+      id: '',
+      service: '',
+      required_time: '',
+      price: '',
+    });
+
     this.readServices();
     this.readReservations();
     this.readBarbers();
@@ -30,8 +53,68 @@ export class AdminDashboard {
     this.serviceApi.readServices$().subscribe((res: any) => this.services = res.data);
   }
 
+  createService(){
+    this.serviceApi.createService$(this.serviceForm.value).subscribe({
+      next: (res:any)=>{
+        console.log(res);
+        this.serviceForm.reset();
+      }
+    })
+  }
+
+  updateService(){
+    this.serviceApi.updateService$(this.serviceForm.value).subscribe({
+      next: (res:any)=>{
+        console.log(res);
+        this.serviceForm.reset();
+        this.readServices();
+      }
+    })
+  }
+
+  editService(service: any){
+    this.serviceForm.patchValue(service);
+  }
+
+  deleteService(id: number){
+    this.serviceApi.deleteService$(id).subscribe({
+      next: (res:any)=>{
+        console.log(res);
+        this.readServices();
+      }
+    })
+  }
+
   readReservations() {
     this.resApi.readReservations$().subscribe((res: any) => this.reservations = res.data);
+  }
+
+  updateReservation(){
+    this.resApi.updateReservation$(this.reservationForm.value).subscribe({
+      next: (res: any)=>{
+        console.log(res);
+        this.reservationForm.reset();
+        this.readReservations();
+      },
+      error: (err: any)=>{
+        console.log(err);
+      }
+    })
+  }
+  editReservation(res: any){
+    this.reservationForm.patchValue(res);
+  }
+
+  deleteReservation(id: number){
+    this.resApi.deleteReservation$(id).subscribe({
+      next: (result: any)=>{
+        console.log(result);
+        this.readReservations();
+      },
+      error: (err: any)=>{
+        console.log(err);
+      }
+    })
   }
 
   readBarbers() {
@@ -40,5 +123,51 @@ export class AdminDashboard {
 
   readUsers() {
     this.userApi.readUsers$().subscribe((res: any) => this.users = res.data);
+  }
+
+  revokeRole(id: number){
+    this.userApi.revokeRole$(id).subscribe({
+      next: (res: any)=>{
+        console.log(res.data);
+        this.readUsers();
+      },
+      error: (err: any)=>{
+        console.log(err);
+      }
+    })
+  }
+
+  giveAdmin(id: number){
+    this.userApi.giveAdmin$(id).subscribe({
+      next: (res: any)=>{
+        console.log(res.data);
+        this.readUsers();
+      },
+      error: (err: any)=>{
+        console.log(err);
+      }
+    })
+  }
+  giveBarber(id: number){
+    this.userApi.giveBarber$(id).subscribe({
+      next: (res: any)=>{
+        console.log(res.data);
+        this.readUsers();
+      },
+      error: (err: any)=>{
+        console.log(err);
+      }
+    })
+  }
+  giveInactive(id: number){
+    this.userApi.giveInactive$(id).subscribe({
+      next: (res: any)=>{
+        console.log(res.data);
+        this.readUsers();
+      },
+      error: (err: any)=>{
+        console.log(err);
+      }
+    })
   }
 }

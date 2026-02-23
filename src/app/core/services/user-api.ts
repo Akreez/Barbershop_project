@@ -19,4 +19,24 @@ export class UserApi {
     const url = this.host + '/user';
     return this.http.get(url);
   }
+
+  revokeRole$(id: number){
+    const url = this.host + '/revokeRole';
+    return this.http.put(url, id);
+  }
+
+  giveBarber$(id: number){
+    const url = this.host + '/giveBarber';
+    return this.http.put(url, id);
+  }
+
+  giveAdmin$(id: number){
+    const url = this.host + '/giveAdmin';
+    return this.http.put(url, id);
+  }
+
+  giveInactive$(id: number){
+    const url = this.host + '/giveInactive';
+    return this.http.put(url, id);
+  }
 }

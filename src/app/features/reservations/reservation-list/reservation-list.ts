@@ -1,13 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { ReservationApi } from '../../../core/services/reservation-api';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { SelectionService } from '../../../core/services/selection/selection';
-import { AsyncPipe } from '@angular/common';
 import { Auth } from '../../../core/services/auth/auth';
 
 @Component({
   selector: 'app-reservation-list',
-  imports: [ReactiveFormsModule, AsyncPipe],
+  imports: [ReactiveFormsModule],
   templateUrl: './reservation-list.html',
   styleUrl: './reservation-list.css',
 })
@@ -38,34 +36,6 @@ export class ReservationList {
       next: (result: any)=>{
         // console.log(result.data);
         this.reservations = result.data
-      },
-      error: (err: any)=>{
-        console.log(err);
-      }
-    })
-  }
-
-  updateReservation(){
-    this.resApi.updateReservation$(this.reservationForm.value).subscribe({
-      next: (res: any)=>{
-        console.log(res);
-        this.reservationForm.reset();
-        this.readReservations();
-      },
-      error: (err: any)=>{
-        console.log(err);
-      }
-    })
-  }
-  editReservation(res: any){
-    this.reservationForm.patchValue(res);
-  }
-
-  deleteReservation(id: number){
-    this.resApi.deleteReservation$(id).subscribe({
-      next: (result: any)=>{
-        console.log(result);
-        this.readReservations();
       },
       error: (err: any)=>{
         console.log(err);
