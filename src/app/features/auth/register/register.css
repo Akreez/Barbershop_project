@@ -1,9 +1,3 @@
-.register-container {
-    min-height: calc(100vh - 70px); /* Levonva a navbar magassága */
-    background-color: #0b0b0b;
-    padding: 20px;
-}
-
 .card {
     border-radius: 15px;
     background: linear-gradient(145deg, #1a1a1a, #000000);
@@ -24,4 +18,60 @@
 button:disabled {
     opacity: 0.5;
     filter: grayscale(1);
+}
+
+.text-danger {
+    font-size: 0.8rem;
+    font-weight: 500;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.9rem;
+}
+
+
+.register-container {
+    min-height: 100vh; /* Teljes képernyőmagasság */
+    width: 100%;
+    /* Sötét modern háttér gradiens */
+    background: radial-gradient(circle at center, #2c2c2c 0%, #000000 100%);
+    padding: 20px;
+}
+
+/* Opcionális: Egy kis extra fényhatás a kártya mögé */
+.card {
+    border-radius: 15px;
+    background: linear-gradient(145deg, #1a1a1a, #000000);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Mélyebb árnyék */
+    border: 1px solid rgba(255, 193, 7, 0.1) !important; /* Halvány sárga keret */
+}
+.input-group-text {
+    border-right: none;
+    border-color: #333; /* Sötétebb szegély */
+}
+
+.form-control {
+    border-left: none;
+    border-color: #333;
+}
+
+/* Sárga fókusz effekt, ami illik a gombhoz */
+.form-control:focus {
+    background-color: #050505;
+    border-color: #ffc107;
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.2);
 }

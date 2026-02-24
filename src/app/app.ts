@@ -6,7 +6,7 @@ import { Navbar } from './shared/components/navbar/navbar';
 
 @Component({
   selector: 'app-root',
-  imports: [ Navbar ,RouterOutlet, RouterLink, CalendarPreviousViewDirective, CalendarTodayDirective, CalendarNextViewDirective, CalendarMonthViewComponent, CalendarWeekViewComponent, CalendarDayViewComponent, CalendarDatePipe],
+  imports: [ Navbar ,RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css',
   providers: [

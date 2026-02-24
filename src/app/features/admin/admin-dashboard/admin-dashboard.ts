@@ -25,6 +25,7 @@ export class AdminDashboard {
   barbers: any[] = [];
   users: any[] = [];
   reservationForm!: any;
+  filterStatus: 'active' | 'inactive' = 'active';
 
 
   ngOnInit() {
@@ -51,6 +52,16 @@ export class AdminDashboard {
     this.readUsers();
   }
 
+  get filteredReservations() {
+    return this.reservations.filter(res => 
+      this.filterStatus === 'active' ? res.active == 1 : res.active == 0
+    );
+  }
+
+  setFilter(status: 'active' | 'inactive') {
+    this.filterStatus = status;
+  }
+
   readServices() {
     this.serviceApi.readServices$().subscribe((res: any) => this.services = res.data);
   }
@@ -60,6 +71,7 @@ export class AdminDashboard {
       next: (res:any)=>{
         console.log(res);
         this.serviceForm.reset();
+        this.readServices();
       }
     })
   }
@@ -70,12 +82,19 @@ export class AdminDashboard {
         console.log(res);
         this.serviceForm.reset();
         this.readServices();
+      },
+      error: (err: any)=>{
+        console.log(err);
       }
     })
   }
 
   editService(service: any){
     this.serviceForm.patchValue(service);
+  }
+  
+  cancel(){
+    this.serviceForm.reset();
   }
 
   deleteService(id: number){
@@ -132,6 +151,7 @@ export class AdminDashboard {
       next: (res: any)=>{
         console.log(res.data);
         this.readUsers();
+        this.readBarbers();
       },
       error: (err: any)=>{
         console.log(err);
@@ -144,6 +164,7 @@ export class AdminDashboard {
       next: (res: any)=>{
         console.log(res.data);
         this.readUsers();
+        this.readBarbers();
       },
       error: (err: any)=>{
         console.log(err);
@@ -155,6 +176,7 @@ export class AdminDashboard {
       next: (res: any)=>{
         console.log(res.data);
         this.readUsers();
+        this.readBarbers();
       },
       error: (err: any)=>{
         console.log(err);
@@ -166,7 +188,8 @@ export class AdminDashboard {
       this.userApi.giveInactive$(id).subscribe({
         next: (res: any) => {
           console.log('Felhasználó inaktiválva');
-          this.readUsers(); // Frissítés
+          this.readUsers();
+          this.readBarbers();
         },
         error: (err) => console.error(err)
       });

@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { ServicesApi } from '../../../core/services/services-api';
 import { Router, RouterModule } from '@angular/router';
 import { SelectionService } from '../../../core/services/selection/selection';
-import { AsyncPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from '../../../core/services/auth/auth';
 
@@ -29,6 +28,10 @@ export class Navbar {
 
   ngOnInit() {
     this.readServices();
+  }
+
+  cancel(){
+    this.loginForm.reset();
   }
 
   selectService(service: any) {
@@ -64,6 +67,8 @@ export class Navbar {
             role: user.role,
             email: user.email
           });
+
+          this.loginForm.reset();
 
           this.router.navigate(['/főoldal']);
         } else {

@@ -21,22 +21,22 @@ export class UserApi {
   }
 
   revokeRole$(id: number){
-    const url = this.host + '/revokeRole';
+    const url = this.host + '/revokeRole/' + id;
     return this.http.put(url, id);
   }
 
   giveBarber$(id: number){
-    const url = this.host + '/giveBarber';
+    const url = this.host + '/giveBarber/' + id;
     return this.http.put(url, id);
   }
 
   giveAdmin$(id: number){
-    const url = this.host + '/giveAdmin';
+    const url = this.host + '/giveAdmin/' + id;
     return this.http.put(url, id);
   }
 
   giveInactive$(id: number){
-    const url = this.host + '/giveInactive';
+    const url = this.host + '/giveInactive/' + id;
     return this.http.put(url, id);
   }
 }

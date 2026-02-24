@@ -7,46 +7,59 @@
     </div>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      
       <div class="mb-3">
         <label class="form-label text-secondary small text-uppercase fw-bold">Felhasználónév</label>
         <div class="input-group">
           <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-person"></i></span>
-          <input type="text" formControlName="username" class="form-control bg-black border-secondary text-white">
+          <input type="text" formControlName="username" class="form-control bg-black border-secondary text-white" placeholder="Minimum 3 karakter">
         </div>
+        @if (registerForm.get('username')?.invalid && registerForm.get('username')?.touched) {
+          <small class="text-danger d-block mt-1">A felhasználónév legalább 3 karakter hosszú legyen!</small>
+        }
       </div>
 
       <div class="mb-3">
-        <label class="form-label text-secondary small text-uppercase fw-bold">Név</label>
+        <label class="form-label text-secondary small text-uppercase fw-bold">Teljes név</label>
         <div class="input-group">
-          <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-person"></i></span>
-          <input type="text" formControlName="name" class="form-control bg-black border-secondary text-white">
+          <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-card-text"></i></span>
+          <input type="text" formControlName="name" class="form-control bg-black border-secondary text-white" placeholder="Minimum 3 karakter">
         </div>
+        @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+          <small class="text-danger d-block mt-1">Kérjük, add meg a teljes nevedet (min. 3 karakter)!</small>
+        }
       </div>
 
       <div class="mb-3">
         <label class="form-label text-secondary small text-uppercase fw-bold">Email cím</label>
         <div class="input-group">
           <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-envelope"></i></span>
-          <input type="email" formControlName="email" class="form-control bg-black border-secondary text-white">
+          <input type="email" formControlName="email" class="form-control bg-black border-secondary text-white" placeholder="pelda@email.hu">
         </div>
+        @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+          <small class="text-danger d-block mt-1">Érvényes email címet adj meg!</small>
+        }
       </div>
 
       <div class="mb-3">
         <label class="form-label text-secondary small text-uppercase fw-bold">Jelszó</label>
         <div class="input-group">
           <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-lock"></i></span>
-          <input type="password" formControlName="password" class="form-control bg-black border-secondary text-white">
+          <input type="password" formControlName="password" class="form-control bg-black border-secondary text-white" placeholder="Minimum 6 karakter">
         </div>
+        @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+          <small class="text-danger d-block mt-1">A jelszónak legalább 6 karakternek kell lennie!</small>
+        }
       </div>
 
       <div class="mb-4">
         <label class="form-label text-secondary small text-uppercase fw-bold">Jelszó újra</label>
         <div class="input-group">
           <span class="input-group-text bg-black border-secondary text-secondary"><i class="bi bi-shield-lock"></i></span>
-          <input type="password" formControlName="confirmPassword" class="form-control bg-black border-secondary text-white">
+          <input type="password" formControlName="confirmPassword" class="form-control bg-black border-secondary text-white" placeholder="Jelszó ismétlése">
         </div>
         @if (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched) {
-          <small class="text-danger mt-1">A két jelszó nem egyezik!</small>
+          <small class="text-danger d-block mt-1">A két jelszó nem egyezik!</small>
         }
       </div>
 

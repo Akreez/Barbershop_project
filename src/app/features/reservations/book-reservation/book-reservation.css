@@ -1,26 +1,101 @@
-::ng-deep .cal-week-view .cal-day-column .cal-hour-segment.bg-disabled,
-::ng-deep .cal-day-view .cal-hour-segment.bg-disabled,
-::ng-deep .cal-event.bg-disabled {
-    background-color: #e9ecef !important;
-    opacity: 0.7 !important;
-    border: 0.5px solid #dee2e6 !important;
+/* Naptár konténer és alap stílusok */
+:host {
+    --primary-gold: #c5a059;
+    --dark-bg: #1a1a1a;
+    --light-gray: #f8f9fa;
+    --border-color: #dee2e6;
 }
 
-::ng-deep .cal-week-view .cal-day-column .cal-hour-segment.bg-disabled,
-::ng-deep .cal-event.bg-disabled,
+/* Naptár fejléc gombok */
+.btn-primary {
+    background-color: var(--dark-bg) !important;
+    border-color: var(--dark-bg) !important;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-gold) !important;
+    border-color: var(--primary-gold) !important;
+}
+
+.btn-outline-secondary {
+    color: var(--dark-bg);
+    border-color: var(--dark-bg);
+}
+
+/* Idősávok és cellák dizájnja */
+::ng-deep .cal-week-view .cal-day-column {
+    border-left-color: var(--border-color) !important;
+}
+
+::ng-deep .cal-week-view .cal-hour-segment {
+    transition: background 0.2s ease;
+}
+
+::ng-deep .cal-week-view .cal-hour-segment:hover:not(.bg-disabled) {
+    background-color: rgba(197, 160, 89, 0.1) !important;
+    cursor: pointer;
+}
+
 ::ng-deep .bg-disabled {
-    cursor: default !important;
+    background-color: #e9ecef !important;
+    
+    opacity: 0.8 !important;
+    pointer-events: none !important;
 }
 
 ::ng-deep .cal-event.bg-disabled {
-    color: transparent !important; 
-    box-shadow: none !important;
-    opacity: 0.7 !important;
+    background-color: #ddd !important;
+    color: transparent !important;
+    opacity: 0.8 !important;
 }
 
-::ng-deep .bg-disabled {
-    background-color: #e9ecef !important;
-    pointer-events: auto !important; 
-    opacity: 0.7 !important;
+.barber-selector-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-left: 5px solid var(--primary-gold);
 }
 
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: var(--dark-bg);
+    color: white;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #444;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 0.25rem rgba(197, 160, 89, 0.25);
+}
+
+@keyframes shakeX {
+  from, to { transform: translate3d(0, 0, 0); }
+  10%, 30%, 50%, 70%, 90% { transform: translate3d(-5px, 0, 0); }
+  20%, 40%, 60%, 80% { transform: translate3d(5px, 0, 0); }
+}
+
+.animate__shakeX {
+  animation: shakeX 0.5s;
+}
+
+.is-invalid {
+  border: 2px solid #dc3545 !important;
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.2);
+}

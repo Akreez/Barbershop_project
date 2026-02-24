@@ -12,7 +12,7 @@ import { Auth } from '../../../core/services/auth/auth';
 export class ReservationList {
 
   reservationForm!: any;
-  reservations!: any;
+  reservations: any[] = [];
 
   private resApi = inject(ReservationApi);
   private builder = inject(FormBuilder);

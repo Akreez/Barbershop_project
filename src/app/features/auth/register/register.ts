@@ -22,7 +22,7 @@ export class Register {
     confirmPassword: ['', [Validators.required]]
   },{
     validators: (group: any) => group.get('password').value === group.get('confirmPassword').value ? null : { mismatch: true }
-  })
+  });
 
   onSubmit() {
     if (this.registerForm.valid) {
@@ -35,4 +35,6 @@ export class Register {
       });
     }
   }
+
+  
 }

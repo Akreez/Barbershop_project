@@ -1,112 +1,98 @@
-<div class="row text-center mb-3">
-  <div class="col-md-4">
-    <div class="btn-group">
-      <div
-        class="btn btn-primary"
-        mwlCalendarPreviousView
-        [view]="view"
-        [(viewDate)]="viewDate"
-      >
-        Előző
-      </div>
-      <div
-        class="btn btn-outline-secondary"
-        mwlCalendarToday
-        [(viewDate)]="viewDate"
-      >
-        Ma
-      </div>
-      <div
-        class="btn btn-primary"
-        mwlCalendarNextView
-        [view]="view"
-        [(viewDate)]="viewDate"
-      >
-        Következő
+<div class="container py-4">
+  <div class="row align-items-center mb-4">
+    <div class="col-md-4">
+      <div class="btn-group shadow-sm">
+        <button class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate">
+          <i class="bi bi-chevron-left"></i> Előző
+        </button>
+        <button class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+          Ma
+        </button>
+        <button class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate">
+          Következő <i class="bi bi-chevron-right"></i>
+        </button>
       </div>
     </div>
+    
   </div>
-  <div class="col-md-4">
-    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
-  </div>
-</div>
 
-<div class="container mt-3" [formGroup]="reservationForm">
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <label class="form-label"><b>1. Válasszon borbélyt:</b></label>
-      <select formControlName="barber_id" class="form-select">
-        <option value="">Minden szabad időpont</option>
+  <div class="row" [formGroup]="reservationForm">
+  <div class="col-12 mb-4">
+    <div class="barber-selector-card" id="barber-selector">
+      <label class="form-label mb-2"><i class="bi bi-person-badge"></i> Válasszon borbélyt:</label>
+      <select formControlName="barber_id" class="form-select form-select-lg" [class.is-invalid]="showBarberError">
+        <option value="" disabled selected>-- Kérjük, válasszon egy borbélyt --</option>
         @for(barber of barbers; track barber.id) {
           <option [value]="barber.id">{{barber.name}}</option>
         }
       </select>
+      @if (showBarberError) {
+        <div class="text-danger small fw-bold mt-2 animate__animated animate__shakeX">
+          <i class="bi bi-exclamation-circle"></i> Az időpont foglalásához először válasszon egy borbélyt!
+        </div>
+      }
     </div>
   </div>
-
-<div [ngSwitch]="view">
-  <mwl-calendar-week-view
-    *ngSwitchCase="'week'"
-    [viewDate]="viewDate"
-    [events]="events"
-    [refresh]="refresh"
-    [hourSegments]="2"
-    [hourSegmentHeight]="30"
-    [dayStartHour]="8" 
-    [dayEndHour]="20"
-    (beforeViewRender)="beforePeriodViewRender($event)"
-    (hourSegmentClicked)="hourSegmentClicked($event.date)"
-    >
-    
-  </mwl-calendar-week-view>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="card shadow-sm border-0 mb-5">
+    <div class="card-body p-0">
+      <div [ngSwitch]="view">
+        <mwl-calendar-week-view
+          *ngSwitchCase="'week'"
+          [viewDate]="viewDate"
+          [events]="events"
+          [refresh]="refresh"
+          [locale]="locale"
+          [weekStartsOn]="weekStartsOn"
+          [hourSegments]="2"
+          [hourSegmentHeight]="40"
+          [dayStartHour]="8" 
+          [dayEndHour]="20"
+          (beforeViewRender)="beforePeriodViewRender($event)"
+          (hourSegmentClicked)="hourSegmentClicked($event.date)"
+          >
+        </mwl-calendar-week-view>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="reservationModalLabel">Időpont foglalás</h1>
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Időpont megerősítése</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-
-
-        <form [formGroup]="reservationForm" (ngSubmit)="createReservation()" id="reservationForm">
-            <div class="mb-2">
-                <label for="StartTime" class="form-label">StartTime</label>
-                <input type="text" id="StartTime" formControlName="start_time" class="form-control">
+      <form [formGroup]="reservationForm" (ngSubmit)="createReservation()" id="reservationForm">
+        <div class="modal-body bg-light">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label small text-muted">Kezdés</label>
+                    <input type="text" formControlName="start_time" class="form-control bg-white" readonly>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-muted">Befejezés</label>
+                    <input type="text" formControlName="end_time" class="form-control bg-white" readonly>
+                </div>
+                <div class="col-12">
+                    <div class="p-3 bg-white rounded border">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Fizetendő összeg:</span>
+                            <strong class="fs-5 text-success">{{reservationForm.get('price')?.value}} Ft</strong>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" formControlName="barber_id">
+                <input type="hidden" formControlName="customer_id">
             </div>
-            <div class="mb-2">
-                <label for="EndTime" class="form-label">EndTime</label>
-                <input type="text" id="EndTime" formControlName="end_time" class="form-control">
-            </div>
-
-            <div class="mb-2">
-                <label for="Price" class="form-label">Service</label>
-                <input type="text" id="Price" formControlName="price" class="form-control">
-            </div>
-
-            <div class="mb-2">
-                <label for="BarberId" class="form-label">Barber</label>
-                <input type="text" id="BarberId" formControlName="barber_id" class="form-control">
-            </div>
-            <div class="mb-2">
-                <label for="CustomerId" class="form-label">Customer</label>
-                <input type="text" id="CustomerId" formControlName="customer_id" class="form-control">
-            </div>
-            <div class="mb-2">
-                <label for="Active" class="form-label">Active</label>
-                <input type="text" id="Active" formControlName="active" class="form-control" placeholder="Nem kell!">
-            </div>
-        </form>
-
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezár</button>
-        <button type="submit" class="btn btn-primary" form="reservationForm" data-bs-dismiss="modal">Foglalás</button>
-      </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-dismiss="modal">Mégse</button>
+          <button type="submit" class="btn btn-primary px-4 shadow-sm" form="reservationForm" data-bs-dismiss="modal">Foglalás véglegesítése</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

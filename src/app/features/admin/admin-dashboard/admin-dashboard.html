@@ -8,7 +8,7 @@
       <div class="card border-0 shadow-sm bg-white">
         <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-3">
           <h5 class="mb-0 fw-bold small text-uppercase text-primary"><i class="bi bi-people me-2"></i>Felhasználói bázis</h5>
-          <span class="badge bg-primary text-white">{{users?.length}} Regisztrált</span>
+          <span class="badge bg-primary text-white">{{users.length}} Regisztrált</span>
         </div>
         
         <div class="card-body p-0" style="max-height: 450px; overflow-y: auto;">
@@ -26,7 +26,7 @@
                   @if (user.id != auth.id()) {
                     <tr>
                       <td class="ps-4">
-                        <div class="fw-bold text-dark">{{user.username || user.name}}</div>
+                        <div class="fw-bold text-dark">{{user.name}}</div>
                         <div class="small text-muted">{{user.email}}</div>
                       </td>
                       <td>
@@ -34,25 +34,27 @@
                           'status-admin': user.role === 'admin',
                           'status-barber': user.role === 'barber',
                           'status-user': user.role === 'user',
-                          'status-inactive': user.active == 0,
-                          'status-superadmin': user.role === 'superadmin'
+                          'status-inactive': user.role == 'inactive',
+                          'status-super-admin': user.role === 'super-admin'
                         }">
-                          {{ user.active == 0 ? 'INACTIVE' : (user.role | uppercase) }}
+                          {{ (user.role | uppercase) }}
                         </span>
                       </td>
                       <td class="text-end pe-4">
-                        @if (user.role !== 'superadmin') {
+                        @if (user.role !== 'super-admin') {
                           <div class="dropdown">
                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                               Művelet
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                               <li><h6 class="dropdown-header">Jogkör váltása</h6></li>
-                              <li><a class="dropdown-item" (click)="giveAdmin(user.id)" [class.disabled]="user.role === 'admin'"><i class="bi bi-shield-check me-2 text-info"></i>Admin</a></li>
-                              <li><a class="dropdown-item" (click)="giveBarber(user.id)" [class.disabled]="user.role === 'barber'"><i class="bi bi-scissors me-2 text-primary"></i>Borbély</a></li>
-                              <li><a class="dropdown-item" (click)="revokeRole(user.id)" [class.disabled]="user.role === 'user'"><i class="bi bi-person-dash me-2"></i>Jogkör visszavonása</a></li>
+                              @if(auth.role() === 'super-admin'){
+                                <li><a class="dropdown-item" (click)="giveAdmin(user.id)" [class.disabled]="user.role === 'admin' || user.role === 'super-admin'"><i class="bi bi-shield-check me-2 text-info"></i>Admin</a></li>
+                              }
+                              <li><a class="dropdown-item" (click)="giveBarber(user.id)" [class.disabled]="user.role === 'barber' || user.role === 'super-admin'"><i class="bi bi-scissors me-2 text-primary"></i>Borbély</a></li>
+                              <li><a class="dropdown-item" (click)="revokeRole(user.id)" [class.disabled]="user.role === 'user' || user.role === 'super-admin'"><i class="bi bi-person-dash me-2"></i>Felhasználó</a></li>
                               <li><hr class="dropdown-divider"></li>
-                              <li><a class="dropdown-item text-danger" (click)="giveInactive(user.id)" [class.disabled]="user.active == 0"><i class="bi bi-slash-circle me-2"></i>Inaktívvá tétel</a></li>
+                              <li><a class="dropdown-item text-danger" (click)="giveInactive(user.id)" [class.disabled]="user.role === 'inactive' || user.role === 'super-admin'"><i class="bi bi-slash-circle me-2"></i>Inaktívvá tétel</a></li>
                             </ul>
                           </div>
                         } @else {
@@ -66,14 +68,14 @@
             </table>
           </div>
         </div>
-      </div>
-    </div>
+      </div> </div> 
 
-    <div class="col-md-7">
+  <div class="col-12">
+  <div class="row g-4"> <div class="col-md-7">
       <div class="card border-0 shadow-sm bg-white h-100">
         <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-3">
           <h5 class="mb-0 text-primary small fw-bold text-uppercase">Szolgáltatások</h5>
-          <button class="btn btn-primary btn-sm rounded-pill" (click)="createService()">+ Új</button>
+          <button class="btn btn-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addModal">+ Új</button>
         </div>
         <div class="card-body">
           <div class="list-group list-group-flush">
@@ -107,7 +109,7 @@
             @for(barber of barbers; track barber.id) {
               <div class="col-6">
                 <div class="p-3 border rounded text-center bg-light">
-                  <div class="fw-bold small">{{barber.username}}</div>
+                  <div class="fw-bold small">{{barber.name}}</div>
                   <div class="text-muted smaller">{{barber.email}}</div>
                 </div>
               </div>
@@ -116,17 +118,75 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
 
+  </div> </div> <div class="col-12 mt-4">
+  <div class="card border-0 shadow-sm bg-white">
+
+<div class="col-12">
+      <div class="card border-0 shadow-sm bg-white">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-3">
+          <h5 class="mb-0 fw-bold small text-uppercase text-primary">
+            <i class="bi bi-calendar-check me-2"></i>Foglalások kezelése
+          </h5>
+          <div class="btn-group btn-group-sm shadow-sm">
+            <button class="btn" [class.btn-primary]="filterStatus === 'active'" [class.btn-outline-primary]="filterStatus !== 'active'" (click)="filterStatus = 'active'">Aktív</button>
+            <button class="btn" [class.btn-primary]="filterStatus === 'inactive'" [class.btn-outline-primary]="filterStatus !== 'inactive'" (click)="filterStatus = 'inactive'">Lezárt</button>
+          </div>
+        </div>
+        
+        <div class="card-body p-0" style="max-height: 450px; overflow-y: auto;">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+              <thead class="table-light sticky-top">
+                <tr class="small text-uppercase text-secondary">
+                  <th class="ps-4">Időpont</th>
+                  <th>Vendég</th>
+                  <th>Borbély</th>
+                  <th class="text-end pe-4">Műveletek</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (res of reservations; track res.id) {
+                  @if ((filterStatus === 'active' && res.active) || (filterStatus === 'inactive' && !res.active)) {
+                    <tr>
+                      <td class="ps-4">
+                        <div class="fw-bold text-dark">{{res.start_time | date:'yyyy.MM.dd'}}</div>
+                        <div class="small text-primary fw-semibold">{{res.start_time | date:'HH:mm'}} - {{res.end_time | date:'HH:mm'}}</div>
+                      </td>
+                      <td>{{res.customer_name || 'Vendég #' + res.customer_id}}</td>
+                      <td>
+                        <span class="badge bg-light text-dark border">
+                          <i class="bi bi-person-badge me-1"></i>{{res.barber_name || 'Borbély #' + res.barber_id}}
+                        </span>
+                      </td>
+                      <td class="text-end pe-4">
+                        @if (res.active) {
+                          <button class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="deleteReservation(res.id)">
+                            <i class="bi bi-trash me-1"></i> Törlés
+                          </button>
+                        } @else {
+                          <span class="badge bg-secondary rounded-pill px-3 py-2 small">Lezárt</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div> </div> <div class="col-12"> <div class="card border-0 shadow-sm bg-white">
+
+<!-- editModal -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
       <div class="modal-header bg-primary text-white">
         <h1 class="modal-title fs-5" id="editModalLabel">Szolgáltatás módosítása</h1>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
       </div>
       <div class="modal-body p-4">
+
         <form [formGroup]="serviceForm" (ngSubmit)="updateService()" id="editServiceForm">
           <div class="mb-3">
             <label class="form-label fw-bold small text-uppercase">Szolgáltatás neve</label>
@@ -141,10 +201,44 @@
             <input type="number" formControlName="price" class="form-control shadow-sm">
           </div>
         </form>
+
       </div>
       <div class="modal-footer bg-light border-0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Mégse</button>
-        <button type="submit" form="editServiceForm" class="btn btn-primary rounded-pill px-4" data-bs-dismiss="modal">Mentés</button>
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" (click)="cancel()">Mégse</button>
+        <button type="submit" class="btn btn-primary rounded-pill px-4" form="editServiceForm" data-bs-dismiss="modal">Mentés</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h1 class="modal-title fs-5" id="addModalLabel">Szolgáltatás Hozzáadása</h1>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
+      </div>
+      <div class="modal-body p-4">
+
+        <form [formGroup]="serviceForm" (ngSubmit)="createService()" id="addServiceForm">
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-uppercase">Szolgáltatás neve</label>
+            <input type="text" formControlName="service" class="form-control shadow-sm">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-uppercase">Szolgáltatás ideje (perc)</label>
+            <input type="text" formControlName="required_time" class="form-control shadow-sm">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold small text-uppercase">Szolgáltatás ára (Ft)</label>
+            <input type="number" formControlName="price" class="form-control shadow-sm">
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer bg-light border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" (click)="cancel()">Mégse</button>
+        <button type="submit" class="btn btn-primary rounded-pill px-4" form="addServiceForm" data-bs-dismiss="modal">Hozzáadás</button>
       </div>
     </div>
   </div>

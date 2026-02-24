@@ -1,4 +1,3 @@
-/* Sticky fejléc a görgetéshez */
 .sticky-top {
     position: sticky;
     top: 0;
@@ -6,18 +5,11 @@
     background-color: #f8fafc !important;
 }
 
-/* Badge színek - Nem fehér betűkkel */
 .status-admin { background-color: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
 .status-barber { background-color: #e0e7ff; color: #4338ca; border-color: #6366f1; }
 .status-user { background-color: #f1f5f9; color: #475569; border-color: #cbd5e1; }
 .status-inactive { background-color: #fee2e2; color: #b91c1c; border-color: #f87171; }
-
-/* Superadmin: Sötét, elegáns arany felirattal */
-.status-superadmin {
-    background-color: #1e293b;
-    color: #fbbf24;
-    border: 1px solid #fbbf24;
-}
+.status-super-admin { background-color: #e0f2fe; color: #0369a1; border-color: #0ea5e9;      }
 
 /* Görgetősáv stílus */
 .card-body::-webkit-scrollbar { width: 5px; }

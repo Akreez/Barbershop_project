@@ -1,4 +1,4 @@
-import { CommonModule, formatDate } from '@angular/common';
+import { CommonModule, formatDate, registerLocaleData } from '@angular/common';
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CalendarCommonModule, CalendarEvent, CalendarModule, CalendarView, CalendarWeekViewComponent, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
@@ -9,14 +9,17 @@ import { UserApi } from '../../../core/services/user-api';
 import { Subject, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { Auth } from '../../../core/services/auth/auth';
+import localeHu from '@angular/common/locales/hu';
+import { LOCALE_ID } from '@angular/core';
+registerLocaleData(localeHu);
 
 
-declare var bootstrap: any; // <--- EZT ADD HOZZÁ
+declare var bootstrap: any;
 @Component({
   selector: 'app-book-reservation',
   standalone: true,
   imports: [ CommonModule, CalendarModule , CalendarCommonModule, CalendarWeekViewComponent, ReactiveFormsModule],
-  providers: [{ provide: DateAdapter, useFactory: adapterFactory }],
+  providers: [{ provide: DateAdapter, useFactory: adapterFactory }, { provide: LOCALE_ID, useValue: 'hu-HU' }],
   templateUrl: './book-reservation.html',
   styleUrl: './book-reservation.css',
   
@@ -30,6 +33,7 @@ export class BookReservation implements OnInit, OnDestroy {
   private readonly auth = inject(Auth);
 
   view: CalendarView = CalendarView.Week;
+  locale: string = 'hu';
   viewDate: Date = new Date();
   events: CalendarEvent[] = [];
   reservations: any[] = [];
@@ -37,6 +41,9 @@ export class BookReservation implements OnInit, OnDestroy {
   selectedService: any = null;
   private serviceSub!: Subscription;
   refresh = new Subject<void>();
+  weekStartsOn: number = 1;
+
+  showBarberError: boolean = false;
 
   reservationForm = this.builder.group({
     start_time: ['', Validators.required],
@@ -58,13 +65,20 @@ export class BookReservation implements OnInit, OnDestroy {
     });
     this.serviceSub = this.selection.selectedService$.subscribe(s => {
       this.selectedService = s;
+
+      if (this.reservationForm) {
+        this.reservationForm.patchValue({
+          barber_id: ''
+        });
+        this.refresh.next(); 
+      }
     });
 
     this.readBarbers();
     this.readReservations();
 
-    // Figyeljük a borbély választót: ha változik, újraolvassuk a foglaltságot
-    this.reservationForm.get('barber_id')?.valueChanges.subscribe(() => {
+    this.reservationForm.get('barber_id')?.valueChanges.subscribe((val) => {
+      if (val) this.showBarberError = false;
       this.readReservations();
     });
   }
@@ -79,11 +93,15 @@ export class BookReservation implements OnInit, OnDestroy {
 
   readReservations() {
     this.resApi.readReservations$().subscribe((result: any) => {
-      this.reservations = result.data;
+      this.reservations = result.data.filter((r: any) => r.active == 1 || r.active === true);
+      
       const selectedBarberId = this.reservationForm.get('barber_id')?.value;
 
       // Események (szürke blokkok) generálása a naptárba
-      this.events = result.data
+      if(!selectedBarberId){
+        this.events = [];
+      }else{
+        this.events = this.reservations
         .filter((r: any) => !selectedBarberId || r.barber_id == selectedBarberId)
         .map((r: any) => ({
           start: new Date(r.start_time),
@@ -92,6 +110,7 @@ export class BookReservation implements OnInit, OnDestroy {
           cssClass: 'bg-disabled',
           color: { primary: '#e9ecef', secondary: '#e9ecef' }
         }));
+      }
       this.refresh.next();
     });
   }
@@ -108,76 +127,116 @@ export class BookReservation implements OnInit, OnDestroy {
     if (date.getTime() < now.getTime()) {
       return true; // Ha múltbéli, azonnal szürkítjük
     }
-
-    if (!this.reservations || this.barbers.length === 0) return false;
     
     const selectedBarberId = this.reservationForm.get('barber_id')?.value;
 
-    if (selectedBarberId) {
-      // Ha van borbély választva, csak az ő foglalásait nézzük
-      return this.reservations.some(res => {
-        const start = new Date(res.start_time);
-        const end = new Date(res.end_time);
-        return (date >= start && date < end) && res.barber_id == selectedBarberId;
-      });
-    } else {
-      // Ha nincs borbély választva, akkor akkor szürke, ha mindenki foglalt
-      const reservationsAtTime = this.reservations.filter(res => {
-        const start = new Date(res.start_time);
-        const end = new Date(res.end_time);
-        return date >= start && date <= end;
-      });
-      return reservationsAtTime.length == this.barbers.length;
-    }
+    if (!selectedBarberId) return false;
+
+    // Ha van borbély választva, csak az ő foglalásait nézzük
+    return this.reservations.some(res => {
+      const start = new Date(res.start_time);
+      const end = new Date(res.end_time);
+      return (date >= start && date < end) && res.barber_id == selectedBarberId;
+    });
+  }
+
+  // Segédfüggvény az időtartam kiszámításához (hogy ne kelljen duplikálni)
+  getDurationMinutes(): number {
+    if (!this.selectedService) return 30;
+    let minutes = parseInt(this.selectedService.required_time.split(':')[1]);
+    if (minutes < 30) return 30;
+    if (minutes > 30 && minutes < 60) return 60;
+    return minutes;
   }
 
   beforePeriodViewRender(event: any) {
-    // Nézzük meg mindkét lehetséges helyet, ahol az oszlopok lehetnek
     const columns = event.hourColumns || (event.body && event.body.hourColumns) || (event.period && event.period.hourColumns);
-    
+    const duration = this.getDurationMinutes();
+    const selectedBarberId = this.reservationForm.get('barber_id')?.value;
+
     if (columns) {
       columns.forEach((column: any) => {
         column.hours.forEach((hour: any) => {
           hour.segments.forEach((segment: any) => {
-            if (this.isSlotReserved(segment.date)) {
+            const segmentDate = segment.date;
+            const endDate = new Date(segmentDate.getTime() + duration * 60000);
+
+            // 1. Alap ellenőrzés: Múltbéli-e vagy eleve foglalt-e a kezdőpont?
+            if (this.isSlotReserved(segmentDate)) {
               segment.cssClass = 'bg-disabled';
+              return;
             }
+
+            // 2. Dinamikus ellenőrzés: Ha ide kattintana, elférne-e a teljes szolgáltatás?
+            if (selectedBarberId) {
+              // Konkrét borbély esetén: szabad-e neki a teljes intervallum?
+              if (this.isIntervalReserved(segmentDate, endDate, selectedBarberId)) {
+                segment.cssClass = 'bg-disabled';
+              }
+            } 
           });
         });
       });
     }
-}
+  }
+  // beforePeroidViewRender vége
+
+  // Új segédfüggvény az intervallum ellenőrzéséhez
+  isIntervalReserved(start: Date, end: Date, barberId: any): boolean {
+    if (!this.reservations || this.reservations.length === 0) return false;
+
+    return this.reservations.some(res => {
+      // Csak az adott borbély aktív foglalásait nézzük
+      if (res.barber_id != barberId) return false;
+
+      const resStart = new Date(res.start_time);
+      const resEnd = new Date(res.end_time);
+
+      // Ütközés akkor van, ha az új intervallum belelóg egy létezőbe
+      // Matematikailag: (StartA < EndB) ÉS (EndA > StartB)
+      return start < resEnd && end > resStart;
+    });
+  }
 
   hourSegmentClicked(date: Date) {
     if (this.isSlotReserved(date)) return;
 
     let barberId = this.reservationForm.get('barber_id')?.value;
 
-    // Ha az "Összes" van kiválasztva, keresünk egy szabad borbélyt
     if (!barberId) {
-      const freeBarber = this.barbers.find(b => !this.reservations.some(r => {
-        const s = new Date(r.start_time);
-        const e = new Date(r.end_time);
-        return (date >= s && date < e) && r.barber_id == b.id;
-      }));
-      
-      if (freeBarber) {
-        barberId = freeBarber.id;
-      } 
+      this.showBarberError = true;
+      // Ugorjunk a választóhoz
+      const element = document.getElementById('barber-selector');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
     }
-
-    var duration = this.selectedService.required_time.split(':')[1];
-    if(this.selectedService.required_time.split(':')[1] < 30){
-      duration = 30;
-    }else if(this.selectedService.required_time.split(':')[1] > 30 && this.selectedService.required_time.split(':')[1] < 60){
-      duration = 60;
-    }
+    
+    // Időtartam kiszámítása (a te logikád alapján)
+    let duration = parseInt(this.selectedService.required_time.split(':')[1]);
+    if (duration < 30) duration = 30;
+    else if (duration > 30 && duration < 60) duration = 60;
 
     const endDate = new Date(date.getTime() + duration * 60000);
 
+    // HA NINCS borbély választva, keresnünk kell egyet, aki a TELJES intervallum alatt szabad
+    if (!barberId) {
+      const freeBarber = this.barbers.find(b => !this.isIntervalReserved(date, endDate, b.id));
+      
+      if (freeBarber) {
+        barberId = freeBarber.id;
+      } else {
+        return;
+      }
+    } else {
+      // HA VAN választott borbély, ellenőrizzük, hogy ő szabad-e végig
+      if (this.isIntervalReserved(date, endDate, barberId)) {
+        return;
+      }
+    }
+
     this.reservationForm.patchValue({
-      start_time: formatDate(date, 'yyyy-MM-dd HH:mm', 'en-GB'),
-      end_time: formatDate(endDate, 'yyyy-MM-dd HH:mm', 'en-GB'),
+      start_time: formatDate(date, 'yyyy-MM-dd HH:mm', 'hu-HU'),
+      end_time: formatDate(endDate, 'yyyy-MM-dd HH:mm', 'hu-HU'),
       barber_id: barberId,
       price: this.selectedService.price,
       customer_id: this.auth.id(),
@@ -185,12 +244,10 @@ export class BookReservation implements OnInit, OnDestroy {
 
     const modalElement = document.getElementById('reservationModal');
     if (modalElement) {
-        const modal = new bootstrap.Modal(modalElement, {
-          focus: true,
-          keyboard: true
-        });
+        const modal = new bootstrap.Modal(modalElement);
         modal.show();
     }
   }
+  // hourSegmentClicked vége
 
 }

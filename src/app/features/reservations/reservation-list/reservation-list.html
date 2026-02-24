@@ -1,42 +1,63 @@
-<div class="container mt-4">
-    <h2 class="text-white mb-4">Foglalások kezelése</h2>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-uppercase mb-1" style="letter-spacing: 1px;">Foglalásaim</h2>
+            <p class="text-muted small mb-0">Itt kezelheted a naptárban rögzített időpontjaidat.</p>
+        </div>
+    </div>
 
-    <div class="table-responsive">
-        <table class="table table-dark table-hover table-striped border-secondary">
-            <thead>
-                <tr class="text-info">
-                    <th>#ID</th>
-                    <th>Kezdés</th>
-                    <th>Vége</th>
-                    <th>Ár (Ft)</th>
-                    <th>Borbély</th>
-                    <th>Vendég</th>
-                    <th>Művelet</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for(res of reservations; track res.id) {
-                    @if (res.active == 1) {
-                        
-                        @if ((auth.role() == 'user' && res.customer_id == auth.id()) || (auth.role() == 'barber' && res.barber_id == auth.id())) {
-                            
-                            <tr>
-                                <td class="fw-bold">#{{res.id}}</td>
-                                <td>{{res.start_time}}</td>
-                                <td>{{res.end_time}}</td>
-                                <td>{{res.price}}</td>
-                                <td>{{res.barber_id}}</td>
-                                <td>{{res.customer_id}}</td>
-                                <td>
-                                    <button class="btn btn-outline-danger btn-sm" (click)="setInactive(res.id)">
-                                        <i class="bi bi-x-circle me-1"></i> Lemondás
-                                    </button>
-                                </td>
-                            </tr>
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="py-3 text-uppercase small fw-bold">Időpont (Kezdés - Vége)</th>
+                        <th class="py-3 text-uppercase small fw-bold text-center">Összeg</th>
+                        <th class="py-3 text-uppercase small fw-bold text-center">Borbély</th>
+                        <th class="py-3 text-uppercase small fw-bold text-center">Művelet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    @for(res of reservations; track res.id) {
+                        @if (res.active == 1) {
+                            @if ((auth.role() == 'user' && res.customer_id == auth.id()) || (auth.role() == 'barber' && res.barber_id == auth.id())) {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold text-dark">{{res.start_time}}</span>
+                                            <span class="text-muted small">Befejezés: {{res.end_time}}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="fw-bold text-success">{{res.price}} Ft</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-inline-flex align-items-center bg-light px-3 py-1 rounded-pill">
+                                            <i class="bi bi-person-fill me-2 text-secondary"></i>
+                                            <span class="small">{{res.barber_id}}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center pe-4">
+                                        <button class="btn btn-action-delete" (click)="setInactive(res.id)">
+                                            <i class="bi bi-trash3 me-1"></i> Lemondás
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
                         }
                     }
-                }
-            </tbody>
-        </table>
+                        <!-- <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="py-4">
+                                    <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
+                                    <p class="text-muted">Nincsenek aktív foglalásaid jelenleg.</p>
+                                </div>
+                            </td>
+                        </tr>
+                     -->
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

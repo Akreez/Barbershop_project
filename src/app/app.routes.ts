@@ -4,12 +4,13 @@ import { ReservationList } from './features/reservations/reservation-list/reserv
 import { Home } from './features/home/home';
 import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
 import { Register } from './features/auth/register/register';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
     {path: '', redirectTo: 'főoldal', pathMatch: 'full'},
     {path: 'főoldal', component: Home},
-    {path: 'foglalas', component: BookReservation},
-    {path: 'lista', component: ReservationList},
-    {path: 'admin', component: AdminDashboard},
+    {path: 'foglalas', component: BookReservation, canActivate: [authGuard], data: { expectedRoles: ['user'] }},
+    {path: 'lista', component: ReservationList, canActivate: [authGuard], data: { expectedRoles: ['user', 'barber'] }},
+    {path: 'admin', component: AdminDashboard, canActivate: [authGuard], data: { expectedRoles: ['admin', 'super-admin'] }},
     {path: 'regisztráció', component: Register}
 ];
